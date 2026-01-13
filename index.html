@@ -21,7 +21,12 @@
     margin: auto;
     padding: 20px;
     position: relative;
-    z-index: 10; /* Ensure message is above all animations */
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
   }
 
   h1 {
@@ -33,19 +38,19 @@
   .message {
     display: none;
     text-align: left;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px;
-    border-radius: 15px;
+    background: linear-gradient(145deg, #fff0f5, #ffe6f0);
+    padding: 30px 35px;
+    border-radius: 25px;
     max-height: 500px;
     overflow-y: auto;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #444;
   }
 
   .message p {
-    font-size: 1.1rem;
-    line-height: 1.7;
     margin-bottom: 15px;
-    color: #444;
   }
 
   .tap-hint {
@@ -60,10 +65,14 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     margin-top: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px 30px;
+    border-radius: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
   }
 
   .time-box {
-    background: white;
+    background: #fff;
     padding: 15px;
     border-radius: 15px;
     font-size: 1rem;
@@ -98,7 +107,7 @@
     top: 0;
     left: 0;
     pointer-events: none;
-    z-index: 1; /* Behind the message box */
+    z-index: 1;
   }
 
   @media (min-width: 768px) {
@@ -108,7 +117,7 @@
     h1 {
       font-size: 3rem;
     }
-    .message p {
+    .message {
       font-size: 1.2rem;
     }
   }
@@ -121,7 +130,7 @@
   <source src="song.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Canvases for fireworks, confetti, balloons -->
+<!-- Canvases -->
 <canvas id="fireworks"></canvas>
 <canvas id="confetti"></canvas>
 <canvas id="balloons"></canvas>
@@ -139,7 +148,6 @@
     <div class="time-box"><span id="seconds">0</span>Seconds</div>
   </div>
 
-  <!-- FULL MESSAGE -->
   <div id="message" class="message">
     <h1>Sayangku, Nur Atiqah 🤍</h1>
     <p>Selamat Ulang Tahun yang ke 24 Nur Atiqah, manusia teristimewa dalam hidup Haziq. Terima kasih, tak pernah gagal walau sesaat, untuk buat Haziq rasa penuh dengan rasa cinta & sayang awak ‘) haziq mintak maaf sebab selalu tak hargai awak secukupnya. Terima kasih, sebab selalu maafkan diri haziq yang tak sempurna untuk awak ‘)</p>
@@ -161,7 +169,7 @@ function playMusic() {
 document.body.addEventListener("click", playMusic, { once: true });
 
 /* COUNTDOWN */
-const targetDate = new Date("January 13, 2026 17:02:00").getTime();
+const targetDate = new Date("January 13, 2026 17:08:10").getTime();
 const d = document.getElementById("days");
 const h = document.getElementById("hours");
 const m = document.getElementById("minutes");
@@ -178,7 +186,7 @@ function updateCountdown() {
     message.style.display = "block";
     title.innerText = "Selamat Hari Lahir 🤍";
     startFireworks();
-    setTimeout(() => { startConfetti(); startBalloons(); }, 3000);
+    setTimeout(() => { startConfetti(); }, 3000);
     return;
   }
   d.innerText = Math.floor(diff / (1000*60*60*24));
@@ -194,98 +202,103 @@ const fwCanvas = document.getElementById("fireworks");
 const fwCtx = fwCanvas.getContext("2d");
 fwCanvas.width = window.innerWidth;
 fwCanvas.height = window.innerHeight;
+
 let fireworks = [];
-function startFireworks() {
-  for(let i=0;i<20;i++){
-    fireworks.push({
-      x: Math.random()*fwCanvas.width,
-      y: Math.random()*fwCanvas.height/2,
-      r: Math.random()*2+1,
-      dx: Math.random()*6-3,
-      dy: Math.random()*-7-2,
-      alpha:1
-    });
-  }
-  animateFireworks();
-}
-function animateFireworks(){
-  fwCtx.clearRect(0,0,fwCanvas.width,fwCanvas.height);
-  fireworks.forEach(fw=>{
-    fwCtx.beginPath();
-    fwCtx.arc(fw.x,fw.y,fw.r,0,Math.PI*2);
-    fwCtx.fillStyle = `hsla(${Math.random()*360},100%,50%,${fw.alpha})`;
-    fwCtx.fill();
-    fw.x += fw.dx;
-    fw.y += fw.dy;
-    fw.alpha -= 0.02;
-  });
-  fireworks = fireworks.filter(fw=>fw.alpha>0);
-  if(fireworks.length>0) requestAnimationFrame(animateFireworks);
+function createFirework() {
+    const x = Math.random() * fwCanvas.width;
+    const y = Math.random() * fwCanvas.height / 2;
+    const hue = Math.random() * 360;
+    for (let i = 0; i < 30; i++) {
+        fireworks.push({
+            x: x,
+            y: y,
+            dx: Math.cos((i/30)*Math.PI*2) * (Math.random()*3+2),
+            dy: Math.sin((i/30)*Math.PI*2) * (Math.random()*3+2),
+            r: Math.random() * 2 + 1,
+            alpha: 1,
+            hue: hue
+        });
+    }
 }
 
-/* CONFETTI - continuous gentle */
+let lastFWTime = performance.now();
+function animateFireworks(now) {
+    const delta = (now - lastFWTime)/1000;
+    lastFWTime = now;
+    fwCtx.clearRect(0,0,fwCanvas.width,fwCanvas.height);
+
+    fireworks.forEach(p => {
+        fwCtx.beginPath();
+        fwCtx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        fwCtx.fillStyle = `hsla(${p.hue},100%,50%,${p.alpha})`;
+        fwCtx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        p.alpha -= 0.02;
+    });
+
+    fireworks = fireworks.filter(p => p.alpha>0);
+    requestAnimationFrame(animateFireworks);
+}
+
+function startFireworks() {
+    let bursts = 0;
+    const interval = setInterval(() => {
+        createFirework();
+        bursts++;
+        if (bursts >= 7) clearInterval(interval);
+    }, 300);
+    requestAnimationFrame(animateFireworks);
+}
+
+/* CONFETTI */
 const confCanvas = document.getElementById("confetti");
 const ctx = confCanvas.getContext("2d");
 confCanvas.width = window.innerWidth;
 confCanvas.height = window.innerHeight;
 let confetti = [];
-for(let i=0;i<20;i++){ 
-  confetti.push({
-    x: Math.random()*confCanvas.width,
-    y: Math.random()*confCanvas.height,
-    r: Math.random()*5+2,
-    d: Math.random()*0.5+0.2,
-    c: `hsl(${Math.random()*360},80%,70%)`
-  });
+for(let i=0;i<20;i++){
+  confetti.push({x: Math.random()*confCanvas.width, y: Math.random()*confCanvas.height, r: Math.random()*5+2, d: Math.random()*0.5+0.2, c: `hsl(${Math.random()*360},80%,70%)`});
 }
 
-/* BALLOONS - 20 slow continuous */
+/* BALLOONS */
 const blCanvas = document.getElementById("balloons");
 const blCtx = blCanvas.getContext("2d");
 blCanvas.width = window.innerWidth;
 blCanvas.height = window.innerHeight;
 let balloons = [];
 for(let i=0;i<20;i++){
-  balloons.push({
-    x: Math.random()*blCanvas.width,
-    y: Math.random()*blCanvas.height,
-    r: Math.random()*20+15,
-    dy: Math.random()*0.15+0.05,
-    color: `hsl(${Math.random()*360},70%,70%)`
-  });
+  balloons.push({x: Math.random()*blCanvas.width, y: Math.random()*blCanvas.height, r: Math.random()*20+15, dy: Math.random()*0.15+0.05, color: `hsl(${Math.random()*360},70%,70%)`});
 }
 
-/* ANIMATION with delta time for constant speed */
+/* ANIMATION */
 let lastTime = performance.now();
-
 function animate(now){
   const delta = (now - lastTime)/1000;
   lastTime = now;
 
-  // Confetti
   ctx.clearRect(0,0,confCanvas.width,confCanvas.height);
   confetti.forEach(p=>{
-    p.y += p.d * 50 * delta; // 50 pixels/sec
+    p.y += p.d * 50 * delta;
     if(p.y>confCanvas.height) p.y=0;
     ctx.beginPath();
     ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle = p.c;
+    ctx.fillStyle=p.c;
     ctx.fill();
   });
 
-  // Balloons
   blCtx.clearRect(0,0,blCanvas.width,blCanvas.height);
   balloons.forEach(b=>{
-    b.y -= b.dy * 50 * delta;
-    if(b.y+b.r*2 < 0) b.y = blCanvas.height + b.r*2;
+    b.y -= b.dy*50*delta;
+    if(b.y+b.r*2 < 0) b.y=blCanvas.height+b.r*2;
     blCtx.beginPath();
     blCtx.ellipse(b.x,b.y,b.r,b.r*1.2,0,0,Math.PI*2);
-    blCtx.fillStyle = b.color;
+    blCtx.fillStyle=b.color;
     blCtx.fill();
     blCtx.beginPath();
     blCtx.moveTo(b.x,b.y+b.r*1.2);
     blCtx.lineTo(b.x,b.y+b.r*1.8);
-    blCtx.strokeStyle = b.color;
+    blCtx.strokeStyle=b.color;
     blCtx.stroke();
   });
 
@@ -293,16 +306,11 @@ function animate(now){
 }
 
 function startConfetti(){ requestAnimationFrame(animate); }
-function startBalloons(){ /* combined with confetti */ }
 
-/* RESIZE CANVASES */
+/* RESIZE */
 window.addEventListener("resize",()=>{
-  confCanvas.width = window.innerWidth;
-  confCanvas.height = window.innerHeight;
-  fwCanvas.width = window.innerWidth;
-  fwCanvas.height = window.innerHeight;
-  blCanvas.width = window.innerWidth;
-  blCanvas.height = window.innerHeight;
+  confCanvas.width = fwCanvas.width = blCanvas.width = window.innerWidth;
+  confCanvas.height = fwCanvas.height = blCanvas.height = window.innerHeight;
 });
 </script>
 </body>
