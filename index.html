@@ -18,25 +18,48 @@
     max-width: 800px;
     margin: auto;
     padding: 20px;
+    text-align: center;
   }
 
   h1 {
-    text-align: center;
     font-size: 2rem;
-    margin-bottom: 20px;
-  }
-
-  .message {
-    font-size: 1rem;
-    line-height: 1.8;
-    white-space: normal;
+    margin-bottom: 15px;
   }
 
   .tap-hint {
-    text-align: center;
     font-size: 0.9rem;
     opacity: 0.7;
     margin-bottom: 15px;
+  }
+
+  /* COUNTDOWN */
+  .countdown {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 30px;
+  }
+
+  .time-box {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+  }
+
+  .time-box span {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  /* MESSAGE */
+  .message {
+    display: none;
+    text-align: left;
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-top: 30px;
   }
 
   canvas {
@@ -47,11 +70,11 @@
   }
 
   @media (min-width: 768px) {
+    .countdown {
+      grid-template-columns: repeat(4, 1fr);
+    }
     h1 {
       font-size: 2.5rem;
-    }
-    .message {
-      font-size: 1.05rem;
     }
   }
 </style>
@@ -69,9 +92,20 @@
 <div class="container">
   <div class="tap-hint">👆 Tap anywhere to play music</div>
 
-  <h1>Sayangku, Nur Atiqah🤍</h1>
+  <h1 id="title">Countdown to Her Birthday 🤍</h1>
 
-  <div class="message">
+  <!-- COUNTDOWN -->
+  <div id="countdown" class="countdown">
+    <div class="time-box"><span id="days">0</span>Days</div>
+    <div class="time-box"><span id="hours">0</span>Hours</div>
+    <div class="time-box"><span id="minutes">0</span>Minutes</div>
+    <div class="time-box"><span id="seconds">0</span>Seconds</div>
+  </div>
+
+  <!-- MESSAGE (LOCKED UNTIL TIME) -->
+  <div id="message" class="message">
+    <h1>Sayangku, Nur Atiqah🤍</h1>
+
     Selamat Ulang Tahun yang ke 24 Nur Atiqah, manusia teristimewa dalam hidup Haziq. Terima kasih, tak pernah gagal walau sesaat, untuk buat haziq rasa penuh dengan rasa cinta & sayang awak ‘) haziq mintak maaf sebab selalu tak hargai awak secukupnya. Terima kasih, sebab selalu maafkan diri haziq yang tak sempurna untuk awak ‘) semuanya berubah awak ‘) haziq lagi banyak habiskan masa sendiri sekarang tanpa awak di sisi haziq yang dulu selalu teman haziq ‘) awak selalu doakan haziq & manusia baik macam awak, haziq takkan pernah berhenti & selayaknya untuk haziq doakan yang baik baik & terbaik untuk diri awak. Haziq takkan putus doakan awak, semoga Allah permudahkan segala urusan kehidupan awak dunia & akhirat, dimurahkan dan diluaskan rezeki awak, dikurniakan afiyah dalam hidup awak, sentiasa dalam kesihatan yang baik. Semoga Allah jaga semua rasa kasih sayang yang ada ni, dipulihkan segalanya yang terjadi, dikurniakan sakinah & mawaddah untuk awak, bidadari haziq yang paling haziq sayang ‘) maafkan haziq semua perkara yang haziq buat banyak sakitkan awak, lukakan awak, semoga satu hari nanti, Allah permudahkan semuanya 🤍
     <br><br>
     Semoga semua yang ada, Allah berkati awak & panjangkan umur awak. Allah mudahkan setiap satu urusan awak. Haziq nak awak sihat sentiasa, dilindungi & dipelihara ke mana mana pun awak pergi. Whatever you do, I do support you, sayang🤍😔 Walaupun haziq taktahu awak dekat mana, awak buat apa, awak dengan siapa , tapi haziq nak awak tahu, haziq sentiasa dekat sini, tunggu awak, message dari awak, selalu. Haziq mintak maaf haziq tak jadi yang terbaik tapi haziq janji haziq akan jadi yang terbaik. Awak jaga diri selalu , semoga tahun ni jadi tahun yang lebih baik untuk awak & semoga tahun ni lagi banyak achievement awak dapat🤍 haziq sentiasa ingat awak, tak pernah lupa awak walau dekat mana pun haziq ada. Haziq sayang awak sangat sangat & haziq takkan pernah berhenti untuk sayang awak sepenuh hati haziq :) jaga diri awak, i miss you ‘)
@@ -81,13 +115,46 @@
 </div>
 
 <script>
-  /* MUSIC UNMUTE ON TAP */
+  /* MUSIC */
   const music = document.getElementById("bgMusic");
   document.body.addEventListener("click", () => {
     music.muted = false;
     music.play();
     document.querySelector(".tap-hint").style.display = "none";
   }, { once: true });
+
+  /* COUNTDOWN DATE: 13 JAN 2026, 4:00 PM */
+  const targetDate = new Date("January 13, 2026 16:00:00").getTime();
+
+  const d = document.getElementById("days");
+  const h = document.getElementById("hours");
+  const m = document.getElementById("minutes");
+  const s = document.getElementById("seconds");
+
+  const countdown = document.getElementById("countdown");
+  const message = document.getElementById("message");
+  const title = document.getElementById("title");
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+      countdown.style.display = "none";
+      message.style.display = "block";
+      title.innerText = "Selamat Hari Lahir 🤍";
+      startConfetti();
+      return;
+    }
+
+    d.innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+    h.innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    m.innerText = Math.floor((diff / (1000 * 60)) % 60);
+    s.innerText = Math.floor((diff / 1000) % 60);
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
 
   /* CONFETTI */
   const canvas = document.getElementById("confetti");
@@ -97,17 +164,20 @@
 
   let confetti = [];
 
-  for (let i = 0; i < 200; i++) {
-    confetti.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 5 + 2,
-      d: Math.random() * 3 + 1,
-      c: `hsl(${Math.random() * 360},100%,70%)`
-    });
+  function startConfetti() {
+    for (let i = 0; i < 250; i++) {
+      confetti.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 5 + 2,
+        d: Math.random() * 3 + 1,
+        c: `hsl(${Math.random() * 360},100%,70%)`
+      });
+    }
+    animateConfetti();
   }
 
-  function drawConfetti() {
+  function animateConfetti() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     confetti.forEach(p => {
       ctx.beginPath();
@@ -117,10 +187,8 @@
       p.y += p.d;
       if (p.y > canvas.height) p.y = 0;
     });
-    requestAnimationFrame(drawConfetti);
+    requestAnimationFrame(animateConfetti);
   }
-
-  drawConfetti();
 </script>
 
 </body>
