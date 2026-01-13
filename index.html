@@ -161,7 +161,7 @@ function playMusic() {
 document.body.addEventListener("click", playMusic, { once: true });
 
 /* COUNTDOWN */
-const targetDate = new Date("January 13, 2026 16:49:10").getTime();
+const targetDate = new Date("January 13, 2026 16:27:00").getTime();
 const d = document.getElementById("days");
 const h = document.getElementById("hours");
 const m = document.getElementById("minutes");
@@ -229,7 +229,7 @@ const ctx = confCanvas.getContext("2d");
 confCanvas.width = window.innerWidth;
 confCanvas.height = window.innerHeight;
 let confetti = [];
-for(let i=0;i<20;i++){ // very few
+for(let i=0;i<20;i++){ // gentle, subtle
   confetti.push({
     x: Math.random()*confCanvas.width,
     y: Math.random()*confCanvas.height,
@@ -251,18 +251,18 @@ function animateConfetti() {
   requestAnimationFrame(animateConfetti);
 }
 
-/* BALLOONS - continuous gentle */
+/* BALLOONS - 20 slow continuous */
 const blCanvas = document.getElementById("balloons");
 const blCtx = blCanvas.getContext("2d");
 blCanvas.width = window.innerWidth;
 blCanvas.height = window.innerHeight;
 let balloons = [];
-for(let i=0;i<10;i++){
+for(let i=0;i<20;i++){
   balloons.push({
     x: Math.random()*blCanvas.width,
     y: Math.random()*blCanvas.height,
     r: Math.random()*20+15,
-    dy: Math.random()*0.2+0.1,
+    dy: Math.random()*0.15+0.05, // very slow
     color: `hsl(${Math.random()*360},70%,70%)`
   });
 }
