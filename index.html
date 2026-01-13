@@ -27,14 +27,22 @@
     color: #ff2d95;
   }
 
-  p {
-    font-size: 1.2rem;
+  p, .message p {
+    font-size: 1.1rem;
     line-height: 1.6;
-    margin-bottom: 20px;
     color: #444;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 15px 20px;
+    margin-bottom: 15px;
+  }
+
+  .message {
+    display: none;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
     border-radius: 15px;
+    max-height: 500px;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   }
 
   .tap-hint {
@@ -44,7 +52,6 @@
     color: #555;
   }
 
-  /* COUNTDOWN */
   .countdown {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -65,20 +72,6 @@
     font-size: 2rem;
     font-weight: bold;
     color: #ff2d95;
-  }
-
-  /* MESSAGE */
-  .message {
-    display: none;
-    margin-top: 30px;
-    text-align: left;
-    font-size: 1.1rem;
-    line-height: 1.7;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 15px;
-    max-height: 500px;
-    overflow-y: auto;
   }
 
   button.play-btn {
@@ -112,8 +105,8 @@
     h1 {
       font-size: 3rem;
     }
-    p {
-      font-size: 1.3rem;
+    p, .message p {
+      font-size: 1.2rem;
     }
   }
 </style>
@@ -143,12 +136,14 @@
     <div class="time-box"><span id="seconds">0</span>Seconds</div>
   </div>
 
-  <!-- MESSAGE -->
+  <!-- FULL MESSAGE -->
   <div id="message" class="message">
-    <h1>Sayangku, Nur Atiqah🤍</h1>
-    <p>
-      Selamat Ulang Tahun yang ke 24 Nur Atiqah, manusia teristimewa dalam hidup Haziq. Terima kasih, tak pernah gagal walau sesaat, untuk buat haziq rasa penuh dengan rasa cinta & sayang awak. Haziq mintak maaf sebab selalu tak hargai awak secukupnya. Semoga semua yang ada, Allah berkati awak & panjangkan umur awak. Allah mudahkan setiap satu urusan awak. Haziq nak awak sihat sentiasa, dilindungi & dipelihara ke mana mana pun awak pergi. Selamat Hari Lahir Nur Atiqah, selamanya kesayangan haziq 🤍
-    </p>
+    <h1>Sayangku, Nur Atiqah 🤍</h1>
+    <p>Selamat Ulang Tahun yang ke 24 Nur Atiqah, manusia teristimewa dalam hidup Haziq. Terima kasih, tak pernah gagal walau sesaat, untuk buat Haziq rasa penuh dengan rasa cinta & sayang awak ‘) haziq mintak maaf sebab selalu tak hargai awak secukupnya. Terima kasih, sebab selalu maafkan diri haziq yang tak sempurna untuk awak ‘)</p>
+    <p>Semua berubah awak ‘) haziq lagi banyak habiskan masa sendiri sekarang tanpa awak di sisi haziq yang dulu selalu teman haziq ‘) awak selalu doakan haziq & manusia baik macam awak, haziq takkan pernah berhenti & selayaknya untuk haziq doakan yang baik baik & terbaik untuk diri awak. Haziq takkan putus doakan awak, semoga Allah permudahkan segala urusan kehidupan awak dunia & akhirat, dimurahkan dan diluaskan rezeki awak, dikurniakan afiyah dalam hidup awak, sentiasa dalam kesihatan yang baik. Semoga Allah jaga semua rasa kasih sayang yang ada ni, dipulihkan segalanya yang terjadi, dikurniakan sakinah & mawaddah untuk awak, bidadari haziq yang paling haziq sayang ‘)</p>
+    <p>Maafkan haziq semua perkara yang haziq buat banyak sakitkan awak, lukakan awak, semoga satu hari nanti, Allah permudahkan semuanya 🤍</p>
+    <p>Semoga semua yang ada, Allah berkati awak & panjangkan umur awak. Allah mudahkan setiap satu urusan awak. Haziq nak awak sihat sentiasa, dilindungi & dipelihara ke mana mana pun awak pergi. Whatever you do, I do support you, sayang 🤍😔 Walaupun haziq taktahu awak dekat mana, awak buat apa, awak dengan siapa, tapi haziq nak awak tahu, haziq sentiasa dekat sini, tunggu awak, message dari awak, selalu. Haziq mintak maaf haziq tak jadi yang terbaik tapi haziq janji haziq akan jadi yang terbaik. Awak jaga diri selalu, semoga tahun ni jadi tahun yang lebih baik untuk awak & semoga tahun ni lagi banyak achievement awak dapat 🤍 haziq sentiasa ingat awak, tak pernah lupa awak walau dekat mana pun haziq ada. Haziq sayang awak sangat sangat & haziq takkan pernah berhenti untuk sayang awak sepenuh hati haziq :) jaga diri awak, i miss you ‘)</p>
+    <p>Selamat Hari Lahir Nur Atiqah, selamanya kesayangan haziq 🤍</p>
   </div>
 </div>
 
@@ -163,7 +158,7 @@
   document.body.addEventListener("click", playMusic, { once: true });
 
   /* COUNTDOWN */
-  const targetDate = new Date("January 13, 2026 16:34:00").getTime();
+  const targetDate = new Date("January 13, 2026 16:37:00").getTime();
   const d = document.getElementById("days");
   const h = document.getElementById("hours");
   const m = document.getElementById("minutes");
@@ -181,7 +176,7 @@
       message.style.display = "block";
       title.innerText = "Selamat Hari Lahir 🤍";
       startFireworks();
-      setTimeout(startConfetti, 4000); // Start confetti after fireworks
+      setTimeout(startConfetti, 4000); // confetti after fireworks
       return;
     }
 
@@ -199,7 +194,6 @@
   const fwCtx = fwCanvas.getContext("2d");
   fwCanvas.width = window.innerWidth;
   fwCanvas.height = window.innerHeight;
-
   let fireworks = [];
   function startFireworks() {
     for (let i = 0; i < 20; i++) {
@@ -216,18 +210,15 @@
     }
     animateFireworks();
   }
-
   function animateFireworks() {
     fwCtx.clearRect(0,0,fwCanvas.width,fwCanvas.height);
     fireworks.forEach(fw => {
       fwCtx.beginPath();
       fwCtx.arc(fw.x, fw.y, fw.r, 0, Math.PI*2);
-      fwCtx.fillStyle = `rgba(${fw.color.match(/\d+/g)},${fw.alpha})`;
+      fwCtx.fillStyle = `hsl(${Math.random()*360},100%,50%)`;
       fwCtx.fill();
-
       fw.x += fw.dx;
       fw.y += fw.dy;
-      fw.life += 0.02;
       fw.alpha -= 0.02;
     });
     fireworks = fireworks.filter(fw => fw.alpha > 0);
@@ -239,16 +230,15 @@
   const ctx = canvas.getContext("2d");
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-
   let confetti = [];
 
   function startConfetti() {
-    for (let i = 0; i < 100; i++) { // reduced number for readability
+    for (let i = 0; i < 50; i++) { // slower, fewer confetti
       confetti.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 6 + 2,
-        d: Math.random() * 3 + 1,
+        r: Math.random() * 5 + 2,
+        d: Math.random() * 1 + 0.5,
         c: `hsl(${Math.random() * 360},100%,60%)`
       });
     }
