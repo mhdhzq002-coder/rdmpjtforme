@@ -158,22 +158,19 @@
   </div>
 </div>
 
-<!-- SUPABASE SCRIPT -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 <script>
-/* SUPABASE CONFIG */
-const SUPABASE_URL = "https://vmwvgiknsyufdjucleur.supabase.co"; // Replace with your project URL
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZtd3ZnaWtuc3l1ZmRqdWNsZXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyOTU5NzQsImV4cCI6MjA4Mzg3MTk3NH0.OTdUIzwqqqBw0cn9vA7MQn-uuQDbjO3v3QIQvn3uH3g"; // Replace with your anon key
-const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_URL = "https://vmwvgiknsyufdjucleur.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZtd3ZnaWtuc3l1ZmRqdWNsZXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyOTU5NzQsImV4cCI6MjA4Mzg3MTk3NH0.OTdUIzwqqqBw0cn9vA7MQn-uuQDbjO3v3QIQvn3uH3g";
 
-/* LOG VISIT TO DATABASE */
+const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 async function logVisit() {
   try {
     const res = await fetch("https://ipapi.co/json/");
     const data = await res.json();
 
-    await supabase.from("page_visits").insert([{
+    const { error } = await supabase.from("page_visits").insert([{
       ip: data.ip,
       city: data.city,
       country: data.country_name,
@@ -181,15 +178,20 @@ async function logVisit() {
       user_agent: navigator.userAgent
     }]);
 
-    console.log("Visit logged ❤️");
-  } catch (err) {
-    console.error("Logging failed", err);
+    if(error){
+      console.error("Insert failed:", error);
+    } else {
+      console.log("Visit logged successfully ✅");
+    }
+  } catch(err) {
+    console.error("Logging failed:", err);
   }
 }
 
-/* Run once when page loads */
+// Run once
 logVisit();
 </script>
+
 
 <script>
 /* MUSIC */
