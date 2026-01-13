@@ -1,0 +1,78 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
+    text-align: center;
+    overflow: hidden;
+  }
+  
+  .container {
+    padding: 20px;
+    color: #333;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .photo {
+    width: 70%;
+    max-width: 250px;
+    border-radius: 20px;
+    margin: 20px auto;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  }
+  
+  #countdown {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  #countdown div {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+  }
+  
+  #countdown span {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  #message {
+    margin-top: 30px;
+    animation: pulse 1s infinite alternate;
+  }
+  
+  @keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+  }
+  
+  /* Tap hint */
+  .tap-hint {
+    position: fixed;
+    top: 10px;
+    width: 100%;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  
+  /* Desktop layout */
+  @media (min-width: 768px) {
+    #countdown {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
