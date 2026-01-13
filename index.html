@@ -161,7 +161,7 @@ function playMusic() {
 document.body.addEventListener("click", playMusic, { once: true });
 
 /* COUNTDOWN */
-const targetDate = new Date("January 13, 2026 16:56:10").getTime();
+const targetDate = new Date("January 13, 2026 17:02:00").getTime();
 const d = document.getElementById("days");
 const h = document.getElementById("hours");
 const m = document.getElementById("minutes");
@@ -229,7 +229,7 @@ const ctx = confCanvas.getContext("2d");
 confCanvas.width = window.innerWidth;
 confCanvas.height = window.innerHeight;
 let confetti = [];
-for(let i=0;i<20;i++){ // gentle, subtle
+for(let i=0;i<20;i++){ 
   confetti.push({
     x: Math.random()*confCanvas.width,
     y: Math.random()*confCanvas.height,
@@ -237,18 +237,6 @@ for(let i=0;i<20;i++){ // gentle, subtle
     d: Math.random()*0.5+0.2,
     c: `hsl(${Math.random()*360},80%,70%)`
   });
-}
-function animateConfetti() {
-  ctx.clearRect(0,0,confCanvas.width,confCanvas.height);
-  confetti.forEach(p=>{
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle=p.c;
-    ctx.fill();
-    p.y += p.d;
-    if(p.y>confCanvas.height) p.y=0;
-  });
-  requestAnimationFrame(animateConfetti);
 }
 
 /* BALLOONS - 20 slow continuous */
@@ -262,31 +250,50 @@ for(let i=0;i<20;i++){
     x: Math.random()*blCanvas.width,
     y: Math.random()*blCanvas.height,
     r: Math.random()*20+15,
-    dy: Math.random()*0.15+0.05, // very slow
+    dy: Math.random()*0.15+0.05,
     color: `hsl(${Math.random()*360},70%,70%)`
   });
 }
-function animateBalloons(){
+
+/* ANIMATION with delta time for constant speed */
+let lastTime = performance.now();
+
+function animate(now){
+  const delta = (now - lastTime)/1000;
+  lastTime = now;
+
+  // Confetti
+  ctx.clearRect(0,0,confCanvas.width,confCanvas.height);
+  confetti.forEach(p=>{
+    p.y += p.d * 50 * delta; // 50 pixels/sec
+    if(p.y>confCanvas.height) p.y=0;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle = p.c;
+    ctx.fill();
+  });
+
+  // Balloons
   blCtx.clearRect(0,0,blCanvas.width,blCanvas.height);
   balloons.forEach(b=>{
+    b.y -= b.dy * 50 * delta;
+    if(b.y+b.r*2 < 0) b.y = blCanvas.height + b.r*2;
     blCtx.beginPath();
     blCtx.ellipse(b.x,b.y,b.r,b.r*1.2,0,0,Math.PI*2);
-    blCtx.fillStyle=b.color;
+    blCtx.fillStyle = b.color;
     blCtx.fill();
     blCtx.beginPath();
     blCtx.moveTo(b.x,b.y+b.r*1.2);
     blCtx.lineTo(b.x,b.y+b.r*1.8);
-    blCtx.strokeStyle=b.color;
+    blCtx.strokeStyle = b.color;
     blCtx.stroke();
-    b.y-=b.dy;
-    if(b.y+b.r*2<0) b.y=blCanvas.height+b.r*2;
   });
-  requestAnimationFrame(animateBalloons);
+
+  requestAnimationFrame(animate);
 }
 
-/* START continuous animations */
-function startConfetti(){ animateConfetti(); }
-function startBalloons(){ animateBalloons(); }
+function startConfetti(){ requestAnimationFrame(animate); }
+function startBalloons(){ /* combined with confetti */ }
 
 /* RESIZE CANVASES */
 window.addEventListener("resize",()=>{
