@@ -21,7 +21,7 @@
     margin: auto;
     padding: 20px;
     position: relative;
-    z-index: 10; /* Make sure message is on top of confetti & balloons */
+    z-index: 10; /* Ensure message is above all animations */
   }
 
   h1 {
@@ -98,7 +98,7 @@
     top: 0;
     left: 0;
     pointer-events: none;
-    z-index: 1; /* Behind the message */
+    z-index: 1; /* Behind the message box */
   }
 
   @media (min-width: 768px) {
@@ -114,7 +114,6 @@
   }
 </style>
 </head>
-
 <body>
 
 <!-- MUSIC -->
@@ -162,7 +161,7 @@ function playMusic() {
 document.body.addEventListener("click", playMusic, { once: true });
 
 /* COUNTDOWN */
-const targetDate = new Date("January 13, 2026 16:43:15").getTime();
+const targetDate = new Date("January 13, 2026 16:49:10").getTime();
 const d = document.getElementById("days");
 const h = document.getElementById("hours");
 const m = document.getElementById("minutes");
@@ -179,7 +178,7 @@ function updateCountdown() {
     message.style.display = "block";
     title.innerText = "Selamat Hari Lahir 🤍";
     startFireworks();
-    setTimeout(() => { startConfetti(); startBalloons(); }, 4000);
+    setTimeout(() => { startConfetti(); startBalloons(); }, 3000);
     return;
   }
   d.innerText = Math.floor(diff / (1000*60*60*24));
@@ -187,7 +186,6 @@ function updateCountdown() {
   m.innerText = Math.floor((diff/(1000*60)) % 60);
   s.innerText = Math.floor((diff/1000) % 60);
 }
-
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
@@ -225,23 +223,20 @@ function animateFireworks(){
   if(fireworks.length>0) requestAnimationFrame(animateFireworks);
 }
 
-/* CONFETTI */
+/* CONFETTI - continuous gentle */
 const confCanvas = document.getElementById("confetti");
 const ctx = confCanvas.getContext("2d");
 confCanvas.width = window.innerWidth;
 confCanvas.height = window.innerHeight;
 let confetti = [];
-function startConfetti() {
-  for(let i=0;i<30;i++){
-    confetti.push({
-      x: Math.random()*confCanvas.width,
-      y: Math.random()*confCanvas.height,
-      r: Math.random()*5+2,
-      d: Math.random()*0.8+0.3,
-      c: `hsl(${Math.random()*360},100%,60%)`
-    });
-  }
-  animateConfetti();
+for(let i=0;i<20;i++){ // very few
+  confetti.push({
+    x: Math.random()*confCanvas.width,
+    y: Math.random()*confCanvas.height,
+    r: Math.random()*5+2,
+    d: Math.random()*0.5+0.2,
+    c: `hsl(${Math.random()*360},80%,70%)`
+  });
 }
 function animateConfetti() {
   ctx.clearRect(0,0,confCanvas.width,confCanvas.height);
@@ -250,29 +245,26 @@ function animateConfetti() {
     ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
     ctx.fillStyle=p.c;
     ctx.fill();
-    p.y+=p.d;
-    if(p.y>confCanvas.height)p.y=0;
+    p.y += p.d;
+    if(p.y>confCanvas.height) p.y=0;
   });
   requestAnimationFrame(animateConfetti);
 }
 
-/* BALLOONS */
+/* BALLOONS - continuous gentle */
 const blCanvas = document.getElementById("balloons");
 const blCtx = blCanvas.getContext("2d");
 blCanvas.width = window.innerWidth;
 blCanvas.height = window.innerHeight;
 let balloons = [];
-function startBalloons(){
-  for(let i=0;i<15;i++){
-    balloons.push({
-      x: Math.random()*blCanvas.width,
-      y: Math.random()*blCanvas.height,
-      r: Math.random()*20+15,
-      dy: Math.random()*0.3+0.2,
-      color: `hsl(${Math.random()*360},70%,70%)`
-    });
-  }
-  animateBalloons();
+for(let i=0;i<10;i++){
+  balloons.push({
+    x: Math.random()*blCanvas.width,
+    y: Math.random()*blCanvas.height,
+    r: Math.random()*20+15,
+    dy: Math.random()*0.2+0.1,
+    color: `hsl(${Math.random()*360},70%,70%)`
+  });
 }
 function animateBalloons(){
   blCtx.clearRect(0,0,blCanvas.width,blCanvas.height);
@@ -291,6 +283,10 @@ function animateBalloons(){
   });
   requestAnimationFrame(animateBalloons);
 }
+
+/* START continuous animations */
+function startConfetti(){ animateConfetti(); }
+function startBalloons(){ animateBalloons(); }
 
 /* RESIZE CANVASES */
 window.addEventListener("resize",()=>{
