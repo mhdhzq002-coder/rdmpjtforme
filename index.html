@@ -9,12 +9,13 @@
   body {
     margin: 0;
     font-family: "Segoe UI", sans-serif;
-    background: linear-gradient(to bottom, #fafafa, #ececec);
+    background: linear-gradient(to bottom, #f8f8f8, #eaeaea);
     color: #222;
+    overflow-x: hidden;
   }
 
   .container {
-    max-width: 820px;
+    max-width: 800px;
     margin: auto;
     padding: 20px;
     text-align: center;
@@ -25,24 +26,30 @@
     margin-bottom: 15px;
   }
 
+  .tap-hint {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin-bottom: 15px;
+  }
+
   /* COUNTDOWN */
   .countdown {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-    margin-top: 25px;
+    gap: 15px;
+    margin-top: 30px;
   }
 
-  .box {
+  .time-box {
     background: white;
-    padding: 14px;
-    border-radius: 14px;
-    font-size: 0.85rem;
+    padding: 15px;
+    border-radius: 15px;
+    font-size: 0.9rem;
   }
 
-  .box span {
+  .time-box span {
     display: block;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: bold;
   }
 
@@ -57,7 +64,8 @@
 
   canvas {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
     pointer-events: none;
   }
 
@@ -66,7 +74,7 @@
       grid-template-columns: repeat(4, 1fr);
     }
     h1 {
-      font-size: 2.4rem;
+      font-size: 2.5rem;
     }
   }
 </style>
@@ -74,23 +82,27 @@
 
 <body>
 
-<!-- MUSIC (AUTO) -->
-<audio id="bgMusic" autoplay loop muted playsinline>
+<!-- MUSIC -->
+<audio id="bgMusic" autoplay loop muted>
   <source src="song.mp3" type="audio/mpeg">
 </audio>
 
-<canvas id="fx"></canvas>
+<canvas id="confetti"></canvas>
 
 <div class="container">
-  <h1 id="title">Countdown 🤍</h1>
+  <div class="tap-hint">👆 Tap anywhere to play music</div>
 
+  <h1 id="title">Countdown to Her Birthday 🤍</h1>
+
+  <!-- COUNTDOWN -->
   <div id="countdown" class="countdown">
-    <div class="box"><span id="d">0</span>Days</div>
-    <div class="box"><span id="h">0</span>Hours</div>
-    <div class="box"><span id="m">0</span>Minutes</div>
-    <div class="box"><span id="s">0</span>Seconds</div>
+    <div class="time-box"><span id="days">0</span>Days</div>
+    <div class="time-box"><span id="hours">0</span>Hours</div>
+    <div class="time-box"><span id="minutes">0</span>Minutes</div>
+    <div class="time-box"><span id="seconds">0</span>Seconds</div>
   </div>
 
+  <!-- MESSAGE (LOCKED UNTIL TIME) -->
   <div id="message" class="message">
     <h1>Sayangku, Nur Atiqah🤍</h1>
 
@@ -103,78 +115,80 @@
 </div>
 
 <script>
-/* FORCE AUTOPLAY ATTEMPT */
-const music = document.getElementById("bgMusic");
-music.play().then(() => music.muted = false).catch(() => {});
+  /* MUSIC */
+  const music = document.getElementById("bgMusic");
+  document.body.addEventListener("click", () => {
+    music.muted = false;
+    music.play();
+    document.querySelector(".tap-hint").style.display = "none";
+  }, { once: true });
 
-/* TIME */
-const target = new Date("January 13, 2026 16:24:00").getTime();
-const d=document.getElementById("d"),h=document.getElementById("h"),
-      m=document.getElementById("m"),s=document.getElementById("s");
-const countdown=document.getElementById("countdown"),
-      message=document.getElementById("message"),
-      title=document.getElementById("title");
+  /* COUNTDOWN DATE: 13 JAN 2026, 4:00 PM */
+  const targetDate = new Date("January 13, 2026 16:27:00").getTime();
 
-/* FX */
-const canvas=document.getElementById("fx"),ctx=canvas.getContext("2d");
-canvas.width=innerWidth; canvas.height=innerHeight;
-let particles=[],mode="firework";
+  const d = document.getElementById("days");
+  const h = document.getElementById("hours");
+  const m = document.getElementById("minutes");
+  const s = document.getElementById("seconds");
 
-function firework(){
-  for(let i=0;i<2;i++){
-    particles.push({
-      x:Math.random()*canvas.width,
-      y:canvas.height,
-      vx:(Math.random()-0.5)*2,
-      vy:-Math.random()*6-6,
-      life:60,
-      c:`hsl(${Math.random()*360},100%,60%)`
+  const countdown = document.getElementById("countdown");
+  const message = document.getElementById("message");
+  const title = document.getElementById("title");
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+      countdown.style.display = "none";
+      message.style.display = "block";
+      title.innerText = "Selamat Hari Lahir 🤍";
+      startConfetti();
+      return;
+    }
+
+    d.innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+    h.innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    m.innerText = Math.floor((diff / (1000 * 60)) % 60);
+    s.innerText = Math.floor((diff / 1000) % 60);
+  }
+
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  /* CONFETTI */
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let confetti = [];
+
+  function startConfetti() {
+    for (let i = 0; i < 250; i++) {
+      confetti.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 5 + 2,
+        d: Math.random() * 3 + 1,
+        c: `hsl(${Math.random() * 360},100%,70%)`
+      });
+    }
+    animateConfetti();
+  }
+
+  function animateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confetti.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.c;
+      ctx.fill();
+      p.y += p.d;
+      if (p.y > canvas.height) p.y = 0;
     });
+    requestAnimationFrame(animateConfetti);
   }
-}
-
-function confetti(){
-  particles.push({
-    x:Math.random()*canvas.width,
-    y:-10,
-    vx:(Math.random()-0.5)*0.8,
-    vy:Math.random()*1.2+0.4,
-    life:600,
-    c:`hsl(${Math.random()*360},80%,70%)`
-  });
-}
-
-function animate(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  if(mode==="firework") firework();
-  if(mode==="confetti" && Math.random()<0.15) confetti();
-
-  particles.forEach(p=>{
-    p.x+=p.vx; p.y+=p.vy; p.life--;
-    ctx.fillStyle=p.c;
-    ctx.fillRect(p.x,p.y,2,2);
-  });
-  particles=particles.filter(p=>p.life>0);
-  requestAnimationFrame(animate);
-}
-animate();
-
-/* COUNTDOWN */
-function tick(){
-  const now=Date.now(),diff=target-now;
-  if(diff<=0){
-    countdown.style.display="none";
-    message.style.display="block";
-    title.innerText="Selamat Hari Lahir 🤍";
-    setTimeout(()=>mode="confetti",2500);
-    return;
-  }
-  d.textContent=Math.floor(diff/86400000);
-  h.textContent=Math.floor(diff/3600000)%24;
-  m.textContent=Math.floor(diff/60000)%60;
-  s.textContent=Math.floor(diff/1000)%60;
-}
-setInterval(tick,1000); tick();
 </script>
 
 </body>
